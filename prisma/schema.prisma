@@ -1,0 +1,37 @@
+// Supabase Postgres: use pooled DATABASE_URL for runtime; DIRECT_URL (session mode) for migrations.
+// https://www.prisma.io/docs/orm/overview/databases/supabase
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String      @id @default(cuid())
+  clerkId          String      @unique
+  email            String?
+  stripeCustomerId String?     @unique
+  plan             String      @default("free")
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  recordings       Recording[]
+
+  @@map("users")
+}
+
+model Recording {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transcript String   @db.Text
+  durationMs Int?
+  mimeType   String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("recordings")
+}
