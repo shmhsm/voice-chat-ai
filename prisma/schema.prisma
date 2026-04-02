@@ -1,13 +1,12 @@
 // Supabase Postgres: use pooled DATABASE_URL for runtime; DIRECT_URL (session mode) for migrations.
 // https://www.prisma.io/docs/orm/overview/databases/supabase
 
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+datasource db {
+  provider = "sqlite"
 }
 
-datasource db {
-  provider = "postgresql"
+generator client {
+  provider = "prisma-client-js"
 }
 
 model User {
@@ -27,7 +26,7 @@ model Recording {
   id         String   @id @default(cuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transcript String   @db.Text
+  transcript String   
   durationMs Int?
   mimeType   String?
   createdAt  DateTime @default(now())

@@ -19,7 +19,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing audio file" }, { status: 400 });
   }
 
-  const openai = new OpenAI({ apiKey });
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: "https://api.groq.com/openai/v1",
+  });
+
+ 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const upload = new File(
@@ -30,7 +36,7 @@ export async function POST(req: Request) {
 
   const transcription = await openai.audio.transcriptions.create({
     file: upload,
-    model: "whisper-1",
+    model: "whisper-large-v3-turbo",
   });
 
   return NextResponse.json({ text: transcription.text });
